@@ -1,11 +1,32 @@
-# Minesweeper
+# tuisweeper
 
-A single-player terminal Minesweeper built with [SpectreTuff](https://github.com/EluciusFTW/SpectreTuff)
+A single-player terminal Minesweeper clone built with [SpectreTuff](https://github.com/EluciusFTW/SpectreTuff)
 (Spectre.Tui) and Elmish.
 
 ```sh
 cd src && dotnet run
 ```
+
+## Installing
+
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download). The scripts build a
+single-file, framework-dependent executable and copy it onto your `PATH` as `tuisweeper`.
+
+**Linux / macOS:**
+
+```bash
+./scripts/install.sh             # installs to ~/.local/bin (or $TUISWEEPER_INSTALL_DIR)
+./scripts/install.sh /custom/dir # or a custom directory
+```
+
+**Windows (PowerShell):**
+
+```powershell
+scripts\install.ps1                      # installs to %LOCALAPPDATA%\Programs\tuisweeper
+scripts\install.ps1 -InstallDir C:\tools # or a custom directory
+```
+
+If the chosen directory is not already on your `PATH`, the script prints how to add it.
 
 | Key                    | Action                                                                         |
 | ---------------------- | ------------------------------------------------------------------------------ |

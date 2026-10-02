@@ -93,7 +93,7 @@ let private boardWidget (model: Model) : IWidget =
     | Ready
     | Playing -> Color.Aqua
 
-  let title = sprintf "Minesweeper · %s" (Difficulty.name model.Difficulty)
+  let title = sprintf "tuisweeper · %s" (Difficulty.name model.Difficulty)
 
   // Three columns per cell, two status lines, plus the box border.
   let width = max (board.Width * 3) (title.Length + 4) + 2
