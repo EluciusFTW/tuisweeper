@@ -5,13 +5,15 @@ A single-player terminal Minesweeper clone built with [SpectreTuff](https://gith
 
 ![tuisweeper: a lost game on the Intermediate board](assets/intermediate.png)
 
+## Running / Installing
+
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download). You can run directly from source:
+
 ```sh
 cd src && dotnet run
 ```
 
-## Installing
-
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download). The scripts build a
+Alternatively, use the included scripts to build a
 single-file, framework-dependent executable and copy it onto your `PATH` as `tuisweeper`.
 
 **Linux / macOS:**
