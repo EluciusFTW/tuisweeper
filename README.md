@@ -43,3 +43,7 @@ If the chosen directory is not already on your `PATH`, the script prints how to 
 
 The first reveal is always safe: mines are placed after it, away from the clicked cell.
 Goal is to reveal all safe squares - mines do not have to be flagged.
+
+## License
+
+[MIT](LICENSE.md)
