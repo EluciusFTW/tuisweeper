@@ -3,6 +3,8 @@
 A single-player terminal Minesweeper clone built with [SpectreTuff](https://github.com/EluciusFTW/SpectreTuff)
 (Spectre.Tui) and Elmish.
 
+![tuisweeper: a lost game on the Intermediate board](assets/intermediate.png)
+
 ```sh
 cd src && dotnet run
 ```
