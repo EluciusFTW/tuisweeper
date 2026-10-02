@@ -75,12 +75,19 @@ let neighbours (board: Board) (x: int, y: int) = [
     for dx in -1 .. 1 do
       let nx, ny = x + dx, y + dy
 
-      match (dx, dy) <> (0, 0) && nx >= 0 && ny >= 0 && nx < board.Width && ny < board.Height with
+      match
+        (dx, dy) <> (0, 0)
+        && nx >= 0
+        && ny >= 0
+        && nx < board.Width
+        && ny < board.Height
+      with
       | true -> yield nx, ny
       | false -> ()
 ]
 
-let cell (board: Board) pos = board.Cells[pos]
+let cell (board: Board) pos =
+  board.Cells[pos]
 
 let flagCount (board: Board) =
   board.Cells |> Map.filter (fun _ c -> c.State = Flagged) |> Map.count
@@ -109,8 +116,8 @@ let private placeMines (rng: Random) (safe: int * int) (board: Board) =
     |> Seq.filter (fun pos -> not (safeZone.Contains pos))
     |> Seq.toArray
     |> fun candidates ->
-         rng.Shuffle candidates
-         candidates |> Array.truncate board.MineCount |> Set.ofArray
+        rng.Shuffle candidates
+        candidates |> Array.truncate board.MineCount |> Set.ofArray
 
   let cells =
     board.Cells
@@ -127,14 +134,18 @@ let private placeMines (rng: Random) (safe: int * int) (board: Board) =
   }
 
 let private checkWin (board: Board) =
-  let allSafeRevealed =
-    board.Cells |> Map.forall (fun _ c -> c.Mine || c.State = Revealed)
+  let allSafeRevealed = board.Cells |> Map.forall (fun _ c -> c.Mine || c.State = Revealed)
 
   match allSafeRevealed with
   | true -> {
       board with
           Status = Won
-          Cells = board.Cells |> Map.map (fun _ c -> match c.Mine with | true -> { c with State = Flagged } | false -> c)
+          Cells =
+            board.Cells
+            |> Map.map (fun _ c ->
+              match c.Mine with
+              | true -> { c with State = Flagged }
+              | false -> c)
     }
   | false -> board
 
@@ -168,10 +179,16 @@ let private floodReveal (start: (int * int) list) (board: Board) =
       | Flagged
       | Revealed -> loop rest cells
 
-  { board with Cells = loop start board.Cells }
+  {
+    board with
+        Cells = loop start board.Cells
+  }
 
 let private revealCells (positions: (int * int) list) (board: Board) =
-  match positions |> List.tryFind (fun pos -> let c = cell board pos in c.Mine && c.State = Hidden) with
+  match
+    positions
+    |> List.tryFind (fun pos -> let c = cell board pos in c.Mine && c.State = Hidden)
+  with
   | Some mine -> explode mine board
   | None -> board |> floodReveal positions |> checkWin
 
@@ -209,5 +226,8 @@ let toggleFlag (pos: int * int) (board: Board) =
       | Revealed -> None
 
     match next with
-    | Some state -> { board with Cells = board.Cells |> Map.add pos { c with State = state } }
+    | Some state -> {
+        board with
+            Cells = board.Cells |> Map.add pos { c with State = state }
+      }
     | None -> board

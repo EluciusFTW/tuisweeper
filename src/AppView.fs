@@ -99,7 +99,8 @@ let private boardWidget (model: Model) : IWidget =
   let width = max (board.Width * 3) (title.Length + 4) + 2
   let height = board.Height + 2 + 2
 
-  { new IWidget with
+  {
+    new IWidget with
       member _.Render(ctx: RenderContext) =
         let boxed =
           box (Look.fromColor borderColor)

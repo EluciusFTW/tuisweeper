@@ -81,19 +81,22 @@ let private bindings: Keymap.KeyBinding<Model, Msg> list = [
   Keymap.KeyBinding.create 'q' "quit" Exit
 ]
 
-let keyMap (model: Model) : IKeyMap =
-  { new IKeyMap with
-      member _.Help() =
-        seq {
-          for keys, description in groupedHelp -> KeyBinding(Keys = ResizeArray keys, Help = description)
-          yield! (Keymap.KeyBinding.toKeyMap bindings model).Help()
-        }
-  }
+let keyMap (model: Model) : IKeyMap = {
+  new IKeyMap with
+    member _.Help() =
+      seq {
+        for keys, description in groupedHelp -> KeyBinding(Keys = ResizeArray keys, Help = description)
+        yield! (Keymap.KeyBinding.toKeyMap bindings model).Help()
+      }
+}
 
-let init () = newGame Beginner, Cmd.none
+let init () =
+  newGame Beginner, Cmd.none
 
 let private elapsedSince (startedAt: DateTime option) =
-  startedAt |> Option.map (fun t -> DateTime.UtcNow - t) |> Option.defaultValue TimeSpan.Zero
+  startedAt
+  |> Option.map (fun t -> DateTime.UtcNow - t)
+  |> Option.defaultValue TimeSpan.Zero
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
   match msg with
@@ -104,7 +107,9 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
   | Move(dx, dy) ->
     let x, y = model.Cursor
-    let clamp hi v = max 0 (min (hi - 1) v)
+
+    let clamp hi v =
+      max 0 (min (hi - 1) v)
 
     {
       model with
@@ -145,7 +150,12 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
 
   | Tick ->
     match model.Board.Status with
-    | Playing -> { model with Elapsed = elapsedSince model.StartedAt }, Cmd.none
+    | Playing ->
+      {
+        model with
+            Elapsed = elapsedSince model.StartedAt
+      },
+      Cmd.none
     | Ready
     | Won
     | Lost _ -> model, Cmd.none

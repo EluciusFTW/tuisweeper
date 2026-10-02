@@ -8,7 +8,8 @@ let subscription (interval: TimeSpan) (msg: 'appMsg) _ = [
   fun dispatch ->
     let timer = new Timer((fun _ -> dispatch msg), null, interval, interval)
 
-    { new IDisposable with
+    {
+      new IDisposable with
         member _.Dispose() =
           timer.Dispose()
     }
