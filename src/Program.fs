@@ -15,7 +15,9 @@ renderer.NoTargetFps()
 Elmish.Program.mkProgram Application.init Application.update (AppView.view renderer)
 |> Elmish.Program.withSubscription (fun model ->
   Input.subscription Application.InputMsg model
-  @ Tick.subscription (TimeSpan.FromMilliseconds 250.0) Application.Tick model)
+  @ (match model.Board.Status with
+     | Game.Playing -> Tick.subscription (TimeSpan.FromSeconds 1.0) Application.Tick model
+     | _ -> []))
 |> Elmish.Program.run
 
 Application.exitEvent.Wait()
