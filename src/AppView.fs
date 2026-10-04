@@ -69,25 +69,28 @@ let private statusLines (model: Model) =
     |> Option.map Highscore.format
     |> Option.defaultValue "---"
 
+  let time = Highscore.format model.Elapsed
+
+  // Always two message lines, so the header keeps its height across game states.
   let face, faceColor, messages =
     match board.Status, model.NewRecord with
-    | Ready, _ -> ":)", Color.Yellow, [ "reveal any cell to start" ]
-    | Playing, _ -> ":)", Color.Yellow, [ "" ]
+    | Ready, _ -> ":)", Color.Yellow, [ "reveal any cell to start"; "" ]
+    | Playing, _ -> ":)", Color.Yellow, [ ""; "" ]
     | Won, Some previous ->
       let previous =
         match previous with
-        | Some t -> sprintf "previous best: %s" (Highscore.format t)
-        | None -> sprintf "first %s win!" (Difficulty.name model.Difficulty)
+        | Some t -> sprintf "was %s" (Highscore.format t)
+        | None -> "first win"
 
-      "B)",
-      recordColor,
-      [
-        sprintf "★ new highscore: %s ★" (Highscore.format model.Elapsed)
-        previous
-        "n: new game"
-      ]
-    | Won, None -> "B)", Color.Green3, [ "cleared! n: new game" ]
-    | Lost _, _ -> ":(", Color.Red1, [ "boom! n: try again" ]
+      "B)", recordColor, [ sprintf "★ new highscore: %s ★" time; sprintf "%s · n: new game" previous ]
+    | Won, None ->
+      let behind =
+        Map.tryFind model.Difficulty model.Highscores
+        |> Option.map (fun b -> sprintf " (+%s)" (Highscore.format (model.Elapsed - b)))
+        |> Option.defaultValue ""
+
+      "B)", Color.Green3, [ sprintf "cleared in %s%s" time behind; "n: new game" ]
+    | Lost _, _ -> ":(", Color.Red1, [ sprintf "boom! after %s" time; "n: try again" ]
 
   let messageStyle =
     match model.NewRecord with
