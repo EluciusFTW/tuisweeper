@@ -54,28 +54,62 @@ let private cellSpan (board: Board) (cursor: int * int) (pos: int * int) =
 
   styled fg bg (sprintf " %s " glyph)
 
-let private statusLine (model: Model) =
+let private recordColor = Color.Gold1
+
+let private recordStyle = Nullable(Style(Nullable recordColor, Nullable(), Nullable Decoration.Bold))
+
+// Status text as (text, style) pairs, so the box can be sized to fit them.
+let private statusLines (model: Model) =
   let board = model.Board
   let minesLeft = board.MineCount - Game.flagCount board
   let seconds = min 999 (int model.Elapsed.TotalSeconds)
 
-  let face, faceColor, message =
-    match board.Status with
-    | Ready -> ":)", Color.Yellow, "reveal any cell to start"
-    | Playing -> ":)", Color.Yellow, ""
-    | Won -> "B)", Color.Green3, "cleared! n: new game"
-    | Lost _ -> ":(", Color.Red1, "boom! n: try again"
+  let best =
+    Map.tryFind model.Difficulty model.Highscores
+    |> Option.map Highscore.format
+    |> Option.defaultValue "---"
 
-  [
-    Text.line [
-      Text.styledSpan (Nullable(Style Color.Red1)) (sprintf " %03d " minesLeft)
-      Text.span " "
-      Text.styledSpan (Nullable(Style faceColor)) face
-      Text.span " "
-      Text.styledSpan (Nullable(Style Color.Aqua)) (sprintf " %03d " seconds)
-    ]
-    Text.line [ Text.styledSpan (Nullable(Style faceColor)) (sprintf " %s" message) ]
+  let face, faceColor, messages =
+    match board.Status, model.NewRecord with
+    | Ready, _ -> ":)", Color.Yellow, [ "reveal any cell to start" ]
+    | Playing, _ -> ":)", Color.Yellow, [ "" ]
+    | Won, Some previous ->
+      let previous =
+        match previous with
+        | Some t -> sprintf "previous best: %s" (Highscore.format t)
+        | None -> sprintf "first %s win!" (Difficulty.name model.Difficulty)
+
+      "B)",
+      recordColor,
+      [
+        sprintf "★ new highscore: %s ★" (Highscore.format model.Elapsed)
+        previous
+        "n: new game"
+      ]
+    | Won, None -> "B)", Color.Green3, [ "cleared! n: new game" ]
+    | Lost _, _ -> ":(", Color.Red1, [ "boom! n: try again" ]
+
+  let messageStyle =
+    match model.NewRecord with
+    | Some _ -> recordStyle
+    | None -> Nullable(Style faceColor)
+
+  let counters = [
+    sprintf " %03d " minesLeft, Nullable(Style Color.Red1)
+    " ", Nullable()
+    face, Nullable(Style faceColor)
+    " ", Nullable()
+    sprintf " %03d " seconds, Nullable(Style Color.Aqua)
+    sprintf "  best %s" best, Nullable(Style recordColor)
   ]
+
+  counters :: [ for m in messages -> [ sprintf " %s" m, messageStyle ] ]
+
+let private lineWidth (spans: (string * Nullable<Style>) list) =
+  spans |> List.sumBy (fun (text, _) -> text.Length)
+
+let private toLine (spans: (string * Nullable<Style>) list) =
+  Text.line [ for text, style in spans -> Text.styledSpan style text ]
 
 let private boardWidget (model: Model) : IWidget =
   let board = model.Board
@@ -84,20 +118,26 @@ let private boardWidget (model: Model) : IWidget =
     for y in 0 .. board.Height - 1 -> Text.line [ for x in 0 .. board.Width - 1 -> cellSpan board model.Cursor (x, y) ]
   ]
 
-  let lines = statusLine model @ rows
+  let status = statusLines model
+  let lines = (status |> List.map toLine) @ rows
 
   let borderColor =
-    match board.Status with
-    | Won -> Color.Green3
-    | Lost _ -> Color.Red1
-    | Ready
-    | Playing -> Color.Aqua
+    match board.Status, model.NewRecord with
+    | Won, Some _ -> recordColor
+    | Won, None -> Color.Green3
+    | Lost _, _ -> Color.Red1
+    | Ready, _
+    | Playing, _ -> Color.Aqua
 
   let title = sprintf "tuisweeper · %s" (Difficulty.name model.Difficulty)
 
-  // Three columns per cell, two status lines, plus the box border.
-  let width = max (board.Width * 3) (title.Length + 4) + 2
-  let height = board.Height + 2 + 2
+  // Three columns per cell, the status lines, plus the box border.
+  let width =
+    (board.Width * 3) :: (title.Length + 4) :: (status |> List.map lineWidth)
+    |> List.max
+    |> (+) 2
+
+  let height = board.Height + status.Length + 2
 
   {
     new IWidget with

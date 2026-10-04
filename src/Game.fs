@@ -10,7 +10,6 @@ type Difficulty =
 module Difficulty =
   let all = [ Beginner; Intermediate; Expert ]
 
-  /// Width, height, mine count — the classic Windows presets.
   let dimensions =
     function
     | Beginner -> 9, 9, 10
@@ -35,7 +34,6 @@ type Cell = {
 }
 
 type Status =
-  // No mines placed yet: they are laid out on the first reveal so it is always safe.
   | Ready
   | Playing
   | Won
@@ -99,9 +97,6 @@ let isOver (board: Board) =
   | Ready
   | Playing -> false
 
-// Keeps the first-clicked cell and its neighbours mine-free so the opening move
-// always uncovers an area. Falls back to sparing only the clicked cell when the
-// board is too dense for that.
 let private placeMines (rng: Random) (safe: int * int) (board: Board) =
   let safeZone =
     let zone = safe :: neighbours board safe |> Set.ofList
@@ -160,8 +155,6 @@ let private explode (pos: int * int) (board: Board) = {
           | _ -> c)
 }
 
-// Breadth-first flood fill: reveals the given cells, and keeps spreading through
-// any cell with no adjacent mines. Flags are respected and never uncovered.
 let private floodReveal (start: (int * int) list) (board: Board) =
   let rec loop (queue: (int * int) list) (cells: Map<int * int, Cell>) =
     match queue with
@@ -192,8 +185,6 @@ let private revealCells (positions: (int * int) list) (board: Board) =
   | Some mine -> explode mine board
   | None -> board |> floodReveal positions |> checkWin
 
-/// Reveal a hidden cell, or — on an already revealed number whose mines are all
-/// flagged — "chord" it by revealing every unflagged neighbour at once.
 let reveal (rng: Random) (pos: int * int) (board: Board) =
   match board.Status with
   | Won

@@ -44,6 +44,9 @@ If the chosen directory is not already on your `PATH`, the script prints how to 
 The first reveal is always safe: mines are placed after it, away from the clicked cell.
 Goal is to reveal all safe squares - mines do not have to be flagged.
 
+Your best time per difficulty is shown while playing and saved to `~/.config/tuisweeper/highscores.txt`
+(`%APPDATA%\tuisweeper\highscores.txt` on Windows).
+
 ## License
 
 [MIT](LICENSE.md)

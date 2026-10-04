@@ -12,6 +12,9 @@ type Model = {
   Cursor: int * int
   StartedAt: DateTime option
   Elapsed: TimeSpan
+  Highscores: Highscore.Highscores
+  /// Set when a win beat the highscore; holds the previous best, if there was one.
+  NewRecord: TimeSpan option option
 }
 
 type Msg =
@@ -27,18 +30,16 @@ let exitEvent = new Threading.ManualResetEventSlim false
 
 let private rng = Random()
 
-let private newGame (difficulty: Difficulty) = {
+let private newGame (highscores: Highscore.Highscores) (difficulty: Difficulty) = {
   Board = Game.create difficulty
   Difficulty = difficulty
   Cursor = 0, 0
   StartedAt = None
   Elapsed = TimeSpan.Zero
+  Highscores = highscores
+  NewRecord = None
 }
 
-// As in tuigether, a key's behavior and its help-bar entry come from one binding
-// list, so the two can never drift apart.
-// Movement and difficulty keys each get one combined help entry (see keyMap)
-// instead of an entry per key, so the help bar fits a normal terminal.
 let private groupedBindings: Keymap.KeyBinding<Model, Msg> list = [
   Keymap.KeyBinding.createSpecial ConsoleKey.UpArrow "up" (Move(0, -1))
   |> Keymap.KeyBinding.orKey (Keymap.CharKey 'k')
@@ -91,7 +92,7 @@ let keyMap (model: Model) : IKeyMap = {
 }
 
 let init () =
-  newGame Beginner, Cmd.none
+  newGame (Highscore.load ()) Beginner, Cmd.none
 
 let private elapsedSince (startedAt: DateTime option) =
   startedAt
@@ -131,13 +132,24 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
       | true -> elapsedSince startedAt
       | false -> model.Elapsed
 
-    {
+    let model = {
       model with
           Board = board
           StartedAt = startedAt
           Elapsed = elapsed
-    },
-    Cmd.none
+    }
+
+    match board.Status with
+    | Won when Highscore.isRecord model.Highscores model.Difficulty elapsed ->
+      let highscores = model.Highscores |> Map.add model.Difficulty elapsed
+
+      {
+        model with
+            Highscores = highscores
+            NewRecord = Some(Map.tryFind model.Difficulty model.Highscores)
+      },
+      Cmd.ofEffect (fun _ -> Highscore.save highscores)
+    | _ -> model, Cmd.none
 
   | ToggleFlag ->
     {
@@ -146,7 +158,7 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     },
     Cmd.none
 
-  | NewGame difficulty -> newGame difficulty, Cmd.none
+  | NewGame difficulty -> newGame model.Highscores difficulty, Cmd.none
 
   | Tick ->
     match model.Board.Status with
