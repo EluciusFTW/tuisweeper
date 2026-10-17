@@ -4,6 +4,8 @@ open System
 open Elmish
 open Spectre.Tui
 open Spectre.Tui.App
+open SpectreTuff
+open SpectreTuff.Elmish
 open Game
 
 type Model = {
@@ -18,15 +20,13 @@ type Model = {
 }
 
 type Msg =
-  | InputMsg of Input.Msg
+  | InputMsg of ConsoleKeyInfo
   | Move of dx: int * dy: int
   | Reveal
   | ToggleFlag
   | NewGame of Difficulty
   | Tick
   | Exit
-
-let exitEvent = new Threading.ManualResetEventSlim false
 
 let private rng = Random()
 
@@ -101,7 +101,7 @@ let private elapsedSince (startedAt: DateTime option) =
 
 let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
   match msg with
-  | InputMsg(Input.KeyPressed key) ->
+  | InputMsg key ->
     match Keymap.KeyBinding.handleKey (groupedBindings @ bindings) key model with
     | Some m -> model, Cmd.ofMsg m
     | None -> model, Cmd.none
@@ -172,6 +172,4 @@ let update (msg: Msg) (model: Model) : Model * Cmd<Msg> =
     | Won
     | Lost _ -> model, Cmd.none
 
-  | Exit ->
-    exitEvent.Set()
-    model, Cmd.none
+  | Exit -> model, TuiCmd.exit

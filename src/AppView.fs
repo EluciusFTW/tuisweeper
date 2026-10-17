@@ -165,9 +165,4 @@ type AppView(model: Model) =
       ctx.Render(boardWidget model, port "content")
       ctx.Render(help [ keyMap model ] |> leftAligned, port "help")
 
-// Subscriptions dispatch from thread-pool threads, and the terminal is not
-// thread-safe, so serialize draws (same as tuigether).
-let private renderLock = obj ()
-
-let view (renderer: Renderer) (model: Model) _dispatch =
-  lock renderLock (fun () -> renderer.Draw(fun ctx _ -> ctx.Render(AppView model)))
+let view (model: Model) _dispatch = AppView model

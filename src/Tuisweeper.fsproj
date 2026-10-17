@@ -6,15 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Elmish" Version="5.0.2" />
-    <PackageReference Include="EluciusFTW.SpectreTuff" Version="0.14.5" />
-    <PackageReference Update="FSharp.Core" Version="10.1.300" />
+    <PackageReference Include="EluciusFTW.SpectreTuff" Version="0.14.14" />
+    <PackageReference Include="EluciusFTW.SpectreTuff.Elmish" Version="0.14.14" />
+    <PackageReference Update="FSharp.Core" Version="10.1.402" />
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="Keylistener.fs" />
-    <Compile Include="Tick.fs" />
-    <Compile Include="Keymap.fs" />
     <Compile Include="Game.fs" />
     <Compile Include="Highscore.fs" />
     <Compile Include="Application.fs" />
