@@ -8,6 +8,8 @@ Slide the tiles with the arrow keys (or `h` `j` `k` `l`); equal tiles merge and 
 Reach the 2048 tile to win, then keep going if you like. Boards from 3x3 to 6x6 (keys `3`–`6`), with
 the best score per board size kept.
 
+Based on the original [2048](https://github.com/gabrielecirulli/2048) by Gabriele Cirulli.
+
 ## Hosting the component
 
 ```fsharp

@@ -61,6 +61,9 @@ Your best time per difficulty is shown while playing and saved to `~/.config/tui
 
 ### tui48
 
+A terminal take on [2048](https://github.com/gabrielecirulli/2048) by Gabriele Cirulli: slide the tiles, merge
+equal ones, and reach the 2048 tile.
+
 | Key                    | Action                         |
 | ---------------------- | ------------------------------ |
 | ←↑↓→ / `h` `j` `k` `l` | slide the tiles                |
