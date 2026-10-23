@@ -8,8 +8,8 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 
-# Script lives in scripts\, the project lives in src\ next to it.
-$project = Join-Path (Split-Path -Parent $PSScriptRoot) 'src'
+# Script lives in scripts\, the executable project lives in src\Tuisweeper.Cli.
+$project = Join-Path (Split-Path -Parent $PSScriptRoot) 'src\Tuisweeper.Cli'
 
 $arch = if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -eq 'Arm64') { 'arm64' } else { 'x64' }
 $rid = "win-$arch"
@@ -18,7 +18,7 @@ Write-Host "Publishing tuisweeper ($rid)..."
 dotnet publish $project -c Release -r $rid --no-self-contained -p:PublishSingleFile=true
 if ($LASTEXITCODE -ne 0) { throw "dotnet publish failed" }
 
-$binary = Join-Path $project "bin\Release\net10.0\$rid\publish\Tuisweeper.exe"
+$binary = Join-Path $project "bin\Release\net10.0\$rid\publish\tuisweeper.exe"
 if (-not (Test-Path $binary)) { throw "Publish succeeded but binary not found at $binary" }
 
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null

@@ -4,8 +4,8 @@
 # Override dir via arg or TUISWEEPER_INSTALL_DIR. Windows: use install.ps1.
 set -euo pipefail
 
-# Script lives in scripts/, the project lives in src/ next to it.
-project="$(cd "$(dirname "${BASH_SOURCE[0]}")/../src" && pwd)"
+# Script lives in scripts/, the executable project lives in src/Tuisweeper.Cli.
+project="$(cd "$(dirname "${BASH_SOURCE[0]}")/../src/Tuisweeper.Cli" && pwd)"
 install_dir="${1:-${TUISWEEPER_INSTALL_DIR:-$HOME/.local/bin}}"
 
 case "$(uname -s)" in
@@ -31,7 +31,7 @@ rid="$os-$arch"
 echo "Publishing tuisweeper ($rid)..."
 dotnet publish "$project" -c Release -r "$rid" --no-self-contained -p:PublishSingleFile=true
 
-binary="$project/bin/Release/net10.0/$rid/publish/Tuisweeper"
+binary="$project/bin/Release/net10.0/$rid/publish/tuisweeper"
 if [ ! -f "$binary" ]; then
   echo "Publish succeeded but binary not found at $binary" >&2
   exit 1

@@ -10,7 +10,7 @@ A single-player terminal Minesweeper clone built with [SpectreTuff](https://gith
 Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download). You can run directly from source:
 
 ```sh
-cd src && dotnet run
+dotnet run --project src/Tuisweeper.Cli
 ```
 
 Alternatively, use the included scripts to build a

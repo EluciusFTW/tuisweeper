@@ -1,11 +1,6 @@
-module Game
+module internal Tuisweeper.Game
 
 open System
-
-type Difficulty =
-  | Beginner
-  | Intermediate
-  | Expert
 
 module Difficulty =
   let all = [ Beginner; Intermediate; Expert ]
