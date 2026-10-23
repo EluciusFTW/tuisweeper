@@ -2,12 +2,31 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <Authors>Guy Buss</Authors>
+    <Copyright>Guy Buss</Copyright>
+    <Title>Tuisweeper - embeddable Minesweeper component for SpectreTuff.Elmish</Title>
+    <Description>Minesweeper as an Elmish component: host it in any SpectreTuff.Elmish program, e.g. as a pop-up game, with pluggable highscore storage.</Description>
+    <PackageTags>tui console minesweeper game spectre spectre.tui spectretuff elmish mvu FSharp F#</PackageTags>
+    <PackageId>EluciusFTW.Tuisweeper</PackageId>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/EluciusFTW/tuisweeper</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/EluciusFTW/tuisweeper</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="EluciusFTW.SpectreTuff" Version="0.14.14" />
     <PackageReference Include="EluciusFTW.SpectreTuff.Elmish" Version="0.14.14" />
     <PackageReference Update="FSharp.Core" Version="10.1.402" />
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.9.50">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

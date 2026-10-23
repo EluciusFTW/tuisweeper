@@ -1,0 +1,52 @@
+name: tuisweeper-publish
+
+# Publishes the EluciusFTW.Tuisweeper library (src/Tuisweeper.Core) to nuget.org.
+# The standalone executable (src/Tuisweeper.Cli) is not packed.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/Tuisweeper.Core/**"
+      - "version.json"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required for NuGet trusted publishing (OIDC)
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Nerdbank.GitVersioning derives the version from git history
+
+      - uses: dotnet/nbgv@master
+        id: nbgv
+        with:
+          setCommonVars: true
+
+      - run: "echo 'PackageVer: ${{ steps.nbgv.outputs.NuGetPackageVersion }}'"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore src/Tuisweeper.Core
+
+      - name: Build
+        run: dotnet build src/Tuisweeper.Core --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack src/Tuisweeper.Core --configuration Release --no-build -o .
+
+      - name: NuGet login (OIDC -> temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: EluciusFTW
+
+      - name: Publish
+        run: dotnet nuget push *.nupkg -k ${{ steps.login.outputs.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
