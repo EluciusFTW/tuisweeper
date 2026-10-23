@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Build tuisweeper (Release, single-file, framework-dependent) and install onto PATH.
+# Build tuigames (Release, single-file, framework-dependent) and install onto PATH.
 # Usage: scripts/install.sh [install-dir]    (default: ~/.local/bin)
-# Override dir via arg or TUISWEEPER_INSTALL_DIR. Windows: use install.ps1.
+# Override dir via arg or TUIGAMES_INSTALL_DIR. Windows: use install.ps1.
 set -euo pipefail
 
-# Script lives in scripts/, the executable project lives in src/Tuisweeper.Cli.
-project="$(cd "$(dirname "${BASH_SOURCE[0]}")/../src/Tuisweeper.Cli" && pwd)"
-install_dir="${1:-${TUISWEEPER_INSTALL_DIR:-$HOME/.local/bin}}"
+# Script lives in scripts/, the executable project lives in src/Tuigames.Cli.
+project="$(cd "$(dirname "${BASH_SOURCE[0]}")/../src/Tuigames.Cli" && pwd)"
+install_dir="${1:-${TUIGAMES_INSTALL_DIR:-$HOME/.local/bin}}"
 
 case "$(uname -s)" in
   Linux) os=linux ;;
@@ -28,17 +28,17 @@ esac
 
 rid="$os-$arch"
 
-echo "Publishing tuisweeper ($rid)..."
+echo "Publishing tuigames ($rid)..."
 dotnet publish "$project" -c Release -r "$rid" --no-self-contained -p:PublishSingleFile=true
 
-binary="$project/bin/Release/net10.0/$rid/publish/tuisweeper"
+binary="$project/bin/Release/net10.0/$rid/publish/tuigames"
 if [ ! -f "$binary" ]; then
   echo "Publish succeeded but binary not found at $binary" >&2
   exit 1
 fi
 
 mkdir -p "$install_dir"
-target="$install_dir/tuisweeper"
+target="$install_dir/tuigames"
 # Unlink first so we can replace the binary even while a copy is running
 # (overwriting in place fails with "Text file busy").
 rm -f "$target"

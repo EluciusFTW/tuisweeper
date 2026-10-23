@@ -1,0 +1,52 @@
+name: tui48-publish
+
+# Publishes the EluciusFTW.Tui48 library (src/Tui48.Core) to nuget.org.
+# The tuigames executable (src/Tuigames.Cli) is not packed.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/Tui48.Core/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required for NuGet trusted publishing (OIDC)
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Nerdbank.GitVersioning derives the version from git history
+
+      - uses: dotnet/nbgv@master
+        id: nbgv
+        with:
+          path: src/Tui48.Core
+          setCommonVars: true
+
+      - run: "echo 'PackageVer: ${{ steps.nbgv.outputs.NuGetPackageVersion }}'"
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore src/Tui48.Core
+
+      - name: Build
+        run: dotnet build src/Tui48.Core --configuration Release --no-restore
+
+      - name: Pack
+        run: dotnet pack src/Tui48.Core --configuration Release --no-build -o .
+
+      - name: NuGet login (OIDC -> temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: EluciusFTW
+
+      - name: Publish
+        run: dotnet nuget push *.nupkg -k ${{ steps.login.outputs.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate

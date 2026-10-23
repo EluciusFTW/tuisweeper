@@ -32,4 +32,4 @@ When embedding, wrap the component's messages in your own (`SweeperMsg of Tuiswe
 presses to it as `Tuisweeper.InputMsg key`, render `Tuisweeper.view` on top of your view, and decide
 what `Closed` means, e.g. hiding the overlay instead of exiting.
 
-See the CLI project in this repository for a minimla example.
+See `src/Tuigames.Cli` in this repository for a host that embeds this and other games behind a menu.

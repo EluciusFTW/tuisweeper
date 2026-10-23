@@ -1,7 +1,7 @@
 name: tuisweeper-publish
 
 # Publishes the EluciusFTW.Tuisweeper library (src/Tuisweeper.Core) to nuget.org.
-# The standalone executable (src/Tuisweeper.Cli) is not packed.
+# The tuigames executable (src/Tuigames.Cli) is not packed.
 on:
   push:
     branches: [main]

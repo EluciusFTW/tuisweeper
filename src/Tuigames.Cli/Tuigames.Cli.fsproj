@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
-    <AssemblyName>tuisweeper</AssemblyName>
+    <AssemblyName>tuigames</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,9 +12,11 @@
 
   <ItemGroup>
     <ProjectReference Include="../Tuisweeper.Core/Tuisweeper.Core.fsproj" />
+    <ProjectReference Include="../Tui48.Core/Tui48.Core.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="Menu.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
